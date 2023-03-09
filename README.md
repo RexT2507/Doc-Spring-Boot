@@ -337,3 +337,124 @@ Supposons que nous avons une classe modèle simple nommée "User" avec des propr
 Dans ce test unitaire, nous avons injecté la classe "User" en utilisant l'annotation "@InjectMocks" et nous avons écrit des assertions pour vérifier que les valeurs des propriétés sont correctement initialisées. En exécutant ce test, nous pouvons nous assurer que la classe modèle "User" fonctionne correctement.
 
 Il est important de noter que cela ne teste que la logique de la classe modèle en elle-même, et pas nécessairement comment elle est utilisée dans le reste de l'application. Pour tester l'application dans son ensemble, il est recommandé d'utiliser des tests d'intégration et des tests fonctionnels qui testent la communication entre les différentes parties de l'application.
+
+## Tester une interface "Repository" Spring Boot
+
+1.  Créez une classe de test pour votre interface Repository. Vous pouvez utiliser JUnit pour écrire vos tests.
+    
+2.  Injectez l'interface Repository dans votre classe de test en utilisant l'annotation @Autowired.
+    
+3.  Écrivez un test pour vérifier que vous pouvez enregistrer un objet dans la base de données en utilisant la méthode save() de l'interface Repository. Pour cela, vous pouvez créer un objet de test, l'enregistrer dans la base de données en utilisant la méthode save(), puis vérifier que l'objet a bien été enregistré en le récupérant à partir de la base de données.
+    
+4.  Écrivez un test pour vérifier que vous pouvez récupérer un objet de la base de données en utilisant la méthode findById() de l'interface Repository. Pour cela, vous pouvez enregistrer un objet de test dans la base de données en utilisant la méthode save(), puis récupérer l'objet en utilisant la méthode findById() et vérifier que les propriétés de l'objet récupéré correspondent aux propriétés de l'objet de test.
+    
+5.  Écrivez des tests supplémentaires pour tester les autres méthodes de l'interface Repository que vous utilisez dans votre application.
+    
+
+Voici un exemple de classe de test pour une interface Repository :
+
+    @RunWith(SpringRunner.class)
+@SpringBootTest
+public class UserRepositoryTest {
+
+    @Autowired
+    private UserRepository userRepository;
+
+	    @Test
+	    public void testSave() {
+	        User user = new User("John", "Doe");
+	        userRepository.save(user);
+	        User savedUser = userRepository.findById(user.getId()).orElse(null);
+	        assertNotNull(savedUser);
+	        assertEquals(user.getFirstName(), savedUser.getFirstName());
+	        assertEquals(user.getLastName(), savedUser.getLastName());
+	    }
+
+	    @Test
+	    public void testFindById() {
+	        User user = new User("John", "Doe");
+	        userRepository.save(user);
+	        User foundUser = userRepository.findById(user.getId()).orElse(null);
+	        assertNotNull(foundUser);
+	        assertEquals(user.getId(), foundUser.getId());
+	        assertEquals(user.getFirstName(), foundUser.getFirstName());
+	        assertEquals(user.getLastName(), foundUser.getLastName());
+	    }
+	}
+Dans cet exemple, nous avons créé deux tests : testSave() et testFindById(). Le premier test vérifie que nous pouvons enregistrer un utilisateur dans la base de données en utilisant la méthode save(), et le deuxième test vérifie que nous pouvons récupérer un utilisateur à partir de la base de données en utilisant la méthode findById().
+
+## Tester un service Spring Boot
+
+Voici un exemple simple de test d'un service Spring Boot avec Mockito et JUnit :
+
+    @RunWith(MockitoJUnitRunner.class)
+	public class UserServiceTest {
+
+	    @Mock
+	    private UserRepository userRepository;
+
+	    @InjectMocks
+	    private UserService userService;
+
+	    @Test
+	    public void testGetUserById() {
+	        // Créer un utilisateur simulé
+	        User user = new User();
+	        user.setId(1L);
+	        user.setName("John Doe");
+	        user.setEmail("johndoe@example.com");
+
+	        // Simuler le comportement de UserRepository.findById()
+	        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+	        // Appeler la méthode getUserById() de UserService
+	        User result = userService.getUserById(1L);
+
+	        // Vérifier que la méthode UserRepository.findById() a été appelée
+	        verify(userRepository, times(1)).findById(1L);
+
+	        // Vérifier que la réponse renvoyée est correcte
+	        assertEquals(user, result);
+	    }
+	}
+
+Dans cet exemple, nous avons simulé le comportement de la méthode *UserRepository.findById()* en utilisant la fonction Mockito **"when"** et **"thenReturn"**. Nous avons ensuite appelé la méthode *getUserById()* de *UserService* et vérifié que *UserRepository.findById()* a été appelée une fois en utilisant la fonction Mockito **"verify"**. Enfin, nous avons vérifié que la réponse renvoyée est correcte en utilisant la fonction JUnit **"assertEquals"**.
+
+## Tester un controller Spring Boot
+
+Voici un exemple de test de la classe UserController en utilisant JUnit et Mockito :
+
+    @RunWith(MockitoJUnitRunner.class)
+	public class UserControllerTest {
+
+	    @InjectMocks
+	    private UserController userController;
+
+	    @Mock
+	    private UserService userService;
+
+	    private MockMvc mockMvc;
+
+	    @Before
+	    public void setup() {
+	        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+	    }
+
+	    @Test
+	    public void testGetUserById() throws Exception {
+	        Long userId = 1L;
+	        User user = new User(userId, "John", "Doe");
+
+	        Mockito.when(userService.getUserById(userId)).thenReturn(user);
+
+	        mockMvc.perform(get("/users/{id}", userId))
+	                .andExpect(status().isOk())
+	                .andExpect(jsonPath("$.id", is(userId.intValue())))
+	                .andExpect(jsonPath("$.firstName", is(user.getFirstName())))
+	                .andExpect(jsonPath("$.lastName", is(user.getLastName())));
+
+	        Mockito.verify(userService, Mockito.times(1)).getUserById(userId);
+	    }
+	}
+
+Dans cet exemple, nous avons utilisé Mockito pour simuler le comportement de la couche de service et nous avons utilisé MockMvc pour tester l'API REST. Nous avons créé un utilisateur simulé et avons simulé l'appel à la méthode `getUserById` du service en utilisant `Mockito.when`. Ensuite, nous avons appelé l'API REST en utilisant MockMvc et avons vérifié si la réponse contient les bonnes informations d'utilisateur en utilisant `andExpect`. Enfin, nous avons vérifié que la méthode `getUserById` du service a été appelée une fois en utilisant `Mockito.verify`.

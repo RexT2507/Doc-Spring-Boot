@@ -278,3 +278,62 @@ Pour créer un controller Spring Boot pour les utilisateurs, vous pouvez suivre 
 
 
 Ces méthodes appellent les méthodes correspondantes du service d'utilisateur pour récupérer, ajouter, mettre à jour ou supprimer les utilisateurs. Vous pouvez adapter ces méthodes pour répondre à vos besoins spécifiques.
+
+## Mise en place de l'environnement de test Eclipse
+
+Pour installer JUnit sur Eclipse, vous pouvez suivre les étapes suivantes:
+
+1.  Ouvrez Eclipse.
+2.  Cliquez sur le menu "Help".
+3.  Sélectionnez "Eclipse Marketplace".
+4.  Dans la barre de recherche, tapez "JUnit".
+5.  Sélectionnez "JUnit" dans les résultats de la recherche.
+6.  Cliquez sur le bouton "Install" pour lancer l'installation.
+7.  Suivez les instructions à l'écran pour compléter l'installation.
+8.  Une fois l'installation terminée, redémarrez Eclipse.
+
+Après l'installation, vous pouvez commencer à utiliser JUnit pour écrire et exécuter des tests unitaires dans vos projets Eclipse.
+
+## Installer Mockito dans un projet Spring Boot
+
+Ajoutez la dépendance Mockito à votre fichier pom.xml. Si vous utilisez Gradle, ajoutez la dépendance à votre build.gradle.
+
+		<!-- Pour Maven -->
+		<dependency>
+		   <groupId>org.mockito</groupId>
+		   <artifactId>mockito-core</artifactId>
+		   <scope>test</scope>
+		</dependency>
+
+## Tester une entité modèle  Spring Boot
+
+Pour tester une classe modèle Java Spring Boot, vous pouvez utiliser l'un des frameworks de test disponibles pour Spring Boot, tels que JUnit ou Mockito. Voici un exemple de test unitaire qui teste une classe modèle simple :
+
+Supposons que nous avons une classe modèle simple nommée "User" avec des propriétés telles que "id", "nom" et "email". Nous pouvons écrire un test unitaire pour cette classe en utilisant JUnit et Mockito comme suit :
+
+    import static org.junit.jupiter.api.Assertions.assertEquals;
+	import org.junit.jupiter.api.Test;
+	import org.mockito.InjectMocks;
+	import org.mockito.junit.jupiter.MockitoExtension;
+
+	@ExtendWith(MockitoExtension.class)
+	public class UserTest {
+
+	    @InjectMocks
+	    private User user;
+
+	    @Test
+	    public void testUser() {
+	        user.setId(1);
+	        user.setName("John");
+	        user.setEmail("john@gmail.com");
+
+	        assertEquals(1, user.getId());
+	        assertEquals("John", user.getName());
+	        assertEquals("john@gmail.com", user.getEmail());
+	    }
+	}
+
+Dans ce test unitaire, nous avons injecté la classe "User" en utilisant l'annotation "@InjectMocks" et nous avons écrit des assertions pour vérifier que les valeurs des propriétés sont correctement initialisées. En exécutant ce test, nous pouvons nous assurer que la classe modèle "User" fonctionne correctement.
+
+Il est important de noter que cela ne teste que la logique de la classe modèle en elle-même, et pas nécessairement comment elle est utilisée dans le reste de l'application. Pour tester l'application dans son ensemble, il est recommandé d'utiliser des tests d'intégration et des tests fonctionnels qui testent la communication entre les différentes parties de l'application.

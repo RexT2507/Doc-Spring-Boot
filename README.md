@@ -179,3 +179,102 @@ Créez une classe Java dans votre projet Spring Boot avec le nom de votre choix.
 	    }
 	}
 
+## Création d'un controller Spring Boot
+
+Pour créer un controller Spring Boot pour les utilisateurs, vous pouvez suivre les étapes suivantes :
+
+1.  Créez une classe UserController avec l'annotation **@RestController**.
+
+	    @RestController
+		public class UserController {
+
+		}
+
+
+2. Injectez le service d'utilisateur dans le contrôleur en utilisant l'annotation **@Autowired**.
+
+		@RestController
+		public class UserController {
+
+		    @Autowired
+		    private UserService userService;
+		    
+		}
+
+
+3.  Créez une méthode pour récupérer tous les utilisateurs. Utilisez l'annotation **@GetMapping** avec le chemin de l'API pour cette méthode.
+
+	    @RestController
+		public class UserController {
+
+		    @Autowired
+		    private UserService userService;
+
+		    @GetMapping("/users")
+		    public List<User> getUsers() {
+		        return userService.getUsers();
+		    }
+		}
+
+
+4.  Créez une méthode pour récupérer un utilisateur par ID. Utilisez l'annotation **@GetMapping** avec le chemin de l'API et l'ID de l'utilisateur pour cette méthode.
+
+	    @RestController
+		public class UserController {
+
+		    @Autowired
+		    private UserService userService;
+
+		    @GetMapping("/users/{userId}")
+		    public User getUserById(@PathVariable Long userId) {
+		        return userService.getUserById(userId);
+		    }
+		}
+
+
+5.  Créez une méthode pour ajouter un nouvel utilisateur. Utilisez l'annotation **@PostMapping** avec le chemin de l'API pour cette méthode.
+
+	    @RestController
+		public class UserController {
+
+		    @Autowired
+		    private UserService userService;
+
+		    @PostMapping("/users")
+		    public User addUser(@RequestBody User user) {
+		        return userService.addUser(user);
+		    }
+		}
+
+
+6.  Créez une méthode pour mettre à jour un utilisateur existant. Utilisez l'annotation **@PutMapping** avec le chemin de l'API et l'ID de l'utilisateur pour cette méthode.
+
+		@RestController
+		public class UserController {
+
+		    @Autowired
+		    private UserService userService;
+
+		    @PutMapping("/users/{userId}")
+		    public User updateUser(@PathVariable Long userId, @RequestBody User user) {
+		        return userService.updateUser(userId, user);
+		    }
+		}
+
+
+7.  Créez une méthode pour supprimer un utilisateur existant. Utilisez l'annotation **@DeleteMapping** avec le chemin de l'API et l'ID de l'utilisateur pour cette méthode.
+
+	    @RestController
+		public class UserController {
+
+		    @Autowired
+		    private UserService userService;
+
+		    @DeleteMapping("/users/{userId}")
+		    public void deleteUser(@PathVariable Long userId) {
+		        userService.deleteUser(userId);
+		    }
+		}
+
+
+Ces méthodes appellent les méthodes correspondantes du service d'utilisateur pour récupérer, ajouter, mettre à jour ou supprimer les utilisateurs. Vous pouvez adapter ces méthodes pour répondre à vos besoins spécifiques.

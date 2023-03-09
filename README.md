@@ -458,3 +458,49 @@ Voici un exemple de test de la classe UserController en utilisant JUnit et Mocki
 	}
 
 Dans cet exemple, nous avons utilisé Mockito pour simuler le comportement de la couche de service et nous avons utilisé MockMvc pour tester l'API REST. Nous avons créé un utilisateur simulé et avons simulé l'appel à la méthode `getUserById` du service en utilisant `Mockito.when`. Ensuite, nous avons appelé l'API REST en utilisant MockMvc et avons vérifié si la réponse contient les bonnes informations d'utilisateur en utilisant `andExpect`. Enfin, nous avons vérifié que la méthode `getUserById` du service a été appelée une fois en utilisant `Mockito.verify`.
+
+## Mise en place du Swagger de l'API Spring Boot
+
+our générer une documentation Swagger pour une application Spring Boot, vous pouvez suivre les étapes suivantes :
+
+1.  Ajouter les dépendances Swagger à votre fichier pom.xml :
+
+		 <dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger2</artifactId>
+		    <version>2.9.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger-ui</artifactId>
+		    <version>2.9.2</version>
+		</dependency>
+
+2.  Ajouter l'annotation `@EnableSwagger2` à votre classe principale :
+
+	    @SpringBootApplication
+		@EnableSwagger2
+		public class MyApp {
+		    // ...
+		}
+
+3.  Configurer Swagger dans votre application. Vous pouvez créer une classe de configuration Swagger comme suit :
+
+	    @Configuration
+		@EnableSwagger2
+		public class SwaggerConfig {
+		    @Bean
+		    public Docket api() {
+		        return new Docket(DocumentationType.SWAGGER_2)
+		                .select()
+		                .apis(RequestHandlerSelectors.any())
+		                .paths(PathSelectors.any())
+		                .build();
+		    }
+		}
+
+Dans cet exemple, nous avons configuré Swagger pour documenter toutes les API exposées par l'application.
+
+4.  Exécuter votre application et accéder à l'interface Swagger UI en accédant à l'URL [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). Vous devriez voir une interface utilisateur Swagger qui affiche la documentation de vos API.
+
+Ces étapes devraient vous permettre de générer une documentation Swagger pour votre application Spring Boot. Vous pouvez également personnaliser la configuration Swagger pour répondre à vos besoins spécifiques en matière de documentation.

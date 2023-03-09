@@ -103,26 +103,26 @@ Voici un exemple de classe Java pour modéliser une entité "Utilisateur" :
 	@Table(name = "users")
 	public class User {
  
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
- 
-    @Column(name = "username", unique = true)
-    private String username;
- 
-    @Column(name = "password")
-    private String password;
- 
-    @Column(name = "enabled")
-    private boolean enabled;
- 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
- 
-    // getters and setters
+	    @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    private Long id;
+	 
+	    @Column(name = "username", unique = true)
+	    private String username;
+	 
+	    @Column(name = "password")
+	    private String password;
+	 
+	    @Column(name = "enabled")
+	    private boolean enabled;
+	 
+	    @ManyToMany(fetch = FetchType.LAZY)
+	    @JoinTable(name = "user_roles",
+	            joinColumns = @JoinColumn(name = "user_id"),
+	            inverseJoinColumns = @JoinColumn(name = "role_id"))
+	    private Set<Role> roles = new HashSet<>();
+	 
+	    // getters and setters
 	}
 
 Dans cet exemple, la classe User est annotée avec `@Entity` et `@Table(name = "users")` pour indiquer qu'elle est une entité et qu'elle doit être mappée à une table de base de données nommée "users". Les champs de la classe sont annotés avec `@Column` pour indiquer comment ils doivent être mappés à des colonnes dans la table de la base de données.
@@ -139,12 +139,12 @@ Voici un exemple de l'interface `UserRepository` utilisant Spring Data JPA pour 
 
     @Repository
 	public interface UserRepository extends JpaRepository<User, Long> {
- 
-    User findByUsername(String username);
- 
-    List<User> findAllByOrderByUsernameAsc();
- 
-    List<User> findByUsernameContainingIgnoreCaseOrderByUsernameAsc(String username);
+	 
+	    User findByUsername(String username);
+	 
+	    List<User> findAllByOrderByUsernameAsc();
+	 
+	    List<User> findByUsernameContainingIgnoreCaseOrderByUsernameAsc(String username);
 	}
 
 Explications :
@@ -155,3 +155,27 @@ Explications :
 -   `findByUsername` est une méthode définie dans l'interface `UserRepository` qui permet de rechercher un utilisateur par son nom d'utilisateur. Cette méthode est basée sur une convention de nommage de Spring Data JPA qui génère automatiquement la requête SQL correspondante à partir du nom de la méthode.
 -   `findAllByOrderByUsernameAsc` est une méthode définie dans l'interface `UserRepository` qui permet de récupérer tous les utilisateurs triés par ordre alphabétique croissant sur le nom d'utilisateur.
 -   `findByUsernameContainingIgnoreCaseOrderByUsernameAsc` est une méthode définie dans l'interface `UserRepository` qui permet de récupérer tous les utilisateurs dont le nom d'utilisateur contient une chaîne de caractères donnée, sans tenir compte de la casse, triés par ordre alphabétique croissant sur le nom d'utilisateur.
+
+## Création d'un service Spring Boot
+
+Créez une classe Java dans votre projet Spring Boot avec le nom de votre choix. Dans votre classe de service, injectez une instance de l'interface `UserRepository` pour effectuer des opérations sur la base de données. Implémentez des méthodes pour effectuer des opérations sur les utilisateurs en utilisant l'instance `userRepository` injectée.
+
+    @Service
+	public class UserService {
+ 
+	    @Autowired
+	    private UserRepository userRepository;
+ 
+	    public User save(User user) {
+	        return userRepository.save(user);
+	    }
+	 
+	    public User findById(Long id) {
+	        return userRepository.findById(id).orElse(null);
+	    }
+	 
+	    public User findByUsername(String username) {
+	        return userRepository.findByUsername(username);
+	    }
+	}
+

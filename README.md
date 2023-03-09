@@ -504,3 +504,23 @@ Dans cet exemple, nous avons configuré Swagger pour documenter toutes les API e
 4.  Exécuter votre application et accéder à l'interface Swagger UI en accédant à l'URL [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). Vous devriez voir une interface utilisateur Swagger qui affiche la documentation de vos API.
 
 Ces étapes devraient vous permettre de générer une documentation Swagger pour votre application Spring Boot. Vous pouvez également personnaliser la configuration Swagger pour répondre à vos besoins spécifiques en matière de documentation.
+
+## Bien commenter son code
+
+Voici un exemple de commentaire de méthode Java pour une application Spring Boot :
+
+    /**
+	 * Récupère tous les utilisateurs de l'application.
+	 *
+	 * @return la liste des utilisateurs
+	 */
+	@GetMapping("/users")
+	public List<User> getAllUsers() {
+	    return userService.getAllUsers();
+	}
+
+Dans cet exemple, nous avons commenté une méthode qui récupère tous les utilisateurs de l'application. Le commentaire commence par une description de la méthode, qui indique ce que fait la méthode (récupérer tous les utilisateurs).
+
+Ensuite, nous avons précisé que la méthode renvoie une liste d'utilisateurs. Cela est utile pour les développeurs qui utilisent cette méthode, car ils peuvent voir immédiatement quel est le type de retour de la méthode.
+
+Enfin, nous n'avons pas mentionné les détails d'implémentation de la méthode car cela n'est pas nécessaire dans ce commentaire. Cependant, il est toujours bon de commenter le code avec des informations utiles pour les développeurs qui pourraient utiliser la méthode.

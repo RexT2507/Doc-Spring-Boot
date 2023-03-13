@@ -1,7 +1,31 @@
 # Doc-Spring-Boot
 Bonnes pratiques Spring Boot de A à Z
 
-## Bien démarre un projet Spring boot :
+# Sommaire
+## Démarrage
+- [Bien démarre un projet Spring boot](#bien-démarrer-un-projet-spring-boot)
+- [Créer son premier projet Spring Boot](#créer-son-premier-projet-spring-boot)
+- [Importer un projet Spring Boot sur Eclipse](#importer-un-projet-spring-boot-sur-eclipse)
+- [Configurer Eclipse pour Maven et Spring Boot](#configurer-eclipse-pour-maven-et-spring-boot)
+## Création
+- [Créer une API Spring Boot](#créer-une-api-spring-boot)
+- [Ordre de développement d'une API Spring Boot](#ordre-de-développement-dune-api-spring-boot)
+- [Modélisation des données d'une API Spring Boot Java](#modélisation-des-données-dune-api-spring-boot-java)
+- [Création de notre interface Repository](#création-de-notre-interface-repository)
+- [Création d'un service Spring Boot](#création-dun-service-spring-boot)
+- [Création d'un controller Spring Boot](#création-dun-controller-spring-boot)
+## Test
+- [Mise en place de l'environnement de test Eclipse](#mise-en-place-de-lenvironnement-de-test-eclipse)
+- [Installer Mockito dans un projet Spring Boot](#installer-mockito-dans-un-projet-spring-boot)
+- [Tester une entité modèle Spring Boot](#tester-une-entité-modèle-spring-boot)
+- [Tester une interface "Repository" Spring Boot](#tester-une-interface-repository-spring-boot)
+- [Tester un service Spring Boot](#tester-un-service-spring-boot)
+- [Tester un controller Spring Boot](#tester-un-controller-spring-boot)
+## Documentation
+- [Mise en place du Swagger de l'API Spring Boot](#mise-en-place-du-swagger-de-lapi-spring-boot)
+- [Bien commenter son code](#bien-commenter-son-code)
+
+## Bien démarrer un projet Spring Boot :
 
 1. *Installation de l'environnement de développement :* Vous devez installer un IDE (Integrated Development Environment) pour développer votre projet. Vous pouvez utiliser des IDEs populaires tels qu'Eclipse, IntelliJ IDEA ou Visual Studio Code pour développer des projets Spring Boot.
 

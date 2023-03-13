@@ -24,6 +24,7 @@ Bonnes pratiques Spring Boot de A à Z
 ## Documentation
 - [Mise en place du Swagger de l'API Spring Boot](#mise-en-place-du-swagger-de-lapi-spring-boot)
 - [Bien commenter son code](#bien-commenter-son-code)
+- [Mettre en place un système de Logging](#mettre-en-place-un-système-de-logging)
 
 ## Bien démarrer un projet Spring Boot :
 
@@ -548,3 +549,52 @@ Dans cet exemple, nous avons commenté une méthode qui récupère tous les util
 Ensuite, nous avons précisé que la méthode renvoie une liste d'utilisateurs. Cela est utile pour les développeurs qui utilisent cette méthode, car ils peuvent voir immédiatement quel est le type de retour de la méthode.
 
 Enfin, nous n'avons pas mentionné les détails d'implémentation de la méthode car cela n'est pas nécessaire dans ce commentaire. Cependant, il est toujours bon de commenter le code avec des informations utiles pour les développeurs qui pourraient utiliser la méthode.
+
+## Mettre en place un système de Logging
+
+1.  Ajoutez la dépendance SLF4J dans le fichier pom.xml de votre projet :
+
+	    <dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+
+2.  Ajoutez une implémentation de SLF4J, par exemple Logback, en ajoutant la dépendance dans votre fichier pom.xml :
+
+	    <dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.2.3</version>
+		</dependency>
+
+3.  Créez un fichier de configuration pour Logback, par exemple "logback.xml" :
+
+	    <configuration>
+		    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		        <file>logs/myapp.log</file>
+		        <encoder>
+		            <pattern>%d %p [%c] - %m%n</pattern>
+		        </encoder>
+		    </appender>
+		    <root level="INFO">
+		        <appender-ref ref="FILE" />
+		    </root>
+		</configuration>
+
+Dans cet exemple, le fichier de log sera créé dans le dossier "logs" à la racine du projet avec le nom "myapp.log". Le pattern spécifie le format de la ligne de log, qui inclut la date, le niveau de log, le nom de la classe et le message.
+
+4.  Dans votre application, utilisez le logging SLF4J avec la classe LoggerFactory pour créer des objets de logger :
+
+		import org.slf4j.Logger;
+		import org.slf4j.LoggerFactory;
+
+		public class MyApp {
+		    private static final Logger logger = LoggerFactory.getLogger(MyApp.class);
+
+		    public static void main(String[] args) {
+		        logger.info("Hello, world!");
+		    }
+		}
+
+Dans cet exemple, nous avons créé un objet de logger en appelant la méthode getLogger de la classe LoggerFactory en utilisant la classe MyApp comme argument. Nous avons ensuite utilisé l'objet de logger pour enregistrer un message d'information. Ce message sera écrit dans le fichier logs/myapp.log avec le format spécifié dans le fichier de configuration.

@@ -1,9 +1,10 @@
+
 # Doc-Spring-Boot
 Bonnes pratiques Spring Boot de A à Z
 
 # Sommaire
 ## Démarrage
-- [Bien démarre un projet Spring boot](#bien-démarrer-un-projet-spring-boot)
+- [Bien démarrer un projet Spring boot](#bien-démarrer-un-projet-spring-boot)
 - [Créer son premier projet Spring Boot](#créer-son-premier-projet-spring-boot)
 - [Importer un projet Spring Boot sur Eclipse](#importer-un-projet-spring-boot-sur-eclipse)
 - [Configurer Eclipse pour Maven et Spring Boot](#configurer-eclipse-pour-maven-et-spring-boot)
@@ -14,6 +15,7 @@ Bonnes pratiques Spring Boot de A à Z
 - [Création de notre interface Repository](#création-de-notre-interface-repository)
 - [Création d'un service Spring Boot](#création-dun-service-spring-boot)
 - [Création d'un controller Spring Boot](#création-dun-controller-spring-boot)
+- [Mise en place d'un système d'authentification](#mise-en-place-dun-système-dauthentification)
 ## Test
 - [Mise en place de l'environnement de test Eclipse](#mise-en-place-de-lenvironnement-de-test-eclipse)
 - [Installer Mockito dans un projet Spring Boot](#installer-mockito-dans-un-projet-spring-boot)
@@ -26,7 +28,7 @@ Bonnes pratiques Spring Boot de A à Z
 - [Bien commenter son code](#bien-commenter-son-code)
 - [Mettre en place un système de Logging](#mettre-en-place-un-système-de-logging)
 
-## Bien démarrer un projet Spring Boot :
+## Bien démarrer un projet Spring Boot
 
 1. *Installation de l'environnement de développement :* Vous devez installer un IDE (Integrated Development Environment) pour développer votre projet. Vous pouvez utiliser des IDEs populaires tels qu'Eclipse, IntelliJ IDEA ou Visual Studio Code pour développer des projets Spring Boot.
 
@@ -304,6 +306,77 @@ Pour créer un controller Spring Boot pour les utilisateurs, vous pouvez suivre 
 
 Ces méthodes appellent les méthodes correspondantes du service d'utilisateur pour récupérer, ajouter, mettre à jour ou supprimer les utilisateurs. Vous pouvez adapter ces méthodes pour répondre à vos besoins spécifiques.
 
+## Mise en place d'un système d'authentification
+
+1.  Créez un projet Spring Boot et ajoutez les dépendances nécessaires dans votre fichier pom.xml :
+
+	    <dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+		   <groupId>io.jsonwebtoken</groupId>
+		   <artifactId>jjwt</artifactId>
+		   <version>0.9.1</version>
+		</dependency>
+
+2.  Dans votre classe User pensez à ajouter les champs nécessaires pour stocker les informations d'identification, telles que l'adresse e-mail et le mot de passe.
+
+3. Créez un contrôleur pour gérer les demandes d'authentification et de création de jetons. Dans ce contrôleur, créez une méthode pour générer un jeton JWT en utilisant la bibliothèque jjwt.
+
+	    @RestController
+		public class AuthController {
+		   
+		   @PostMapping("/login")
+		   public String login(@RequestBody User user) {
+		       // Vérifier si l'utilisateur existe dans la base de données
+		       // Vérifier si le mot de passe est correct
+		       
+		       // Si l'utilisateur est authentifié, générer un jeton JWT et le retourner
+		       String token = Jwts.builder()
+		               .setSubject(user.getEmail())
+		               .signWith(SignatureAlgorithm.HS256, "secret".getBytes())
+		               .compact();
+		       return token;
+		   }
+		}
+
+4.  Ajoutez une annotation @EnableWebSecurity à votre classe principale pour activer la sécurité Web de Spring.
+
+	    @SpringBootApplication
+		@EnableWebSecurity
+		public class MyApp {
+		   public static void main(String[] args) {
+		       SpringApplication.run(MyApp.class, args);
+		   }
+		}
+		
+5.  Créez une classe de configuration de sécurité qui définit les règles d'accès aux points de terminaison de l'API. Dans cette classe, créez une méthode pour authentifier les utilisateurs en utilisant le jeton JWT.
+
+	    @Configuration
+		@EnableWebSecurity
+		public class SecurityConfig extends WebSecurityConfigurerAdapter {
+		   
+		   @Override
+		   protected void configure(HttpSecurity http) throws Exception {
+		       http.csrf().disable()
+		               .authorizeRequests()
+		               .antMatchers("/login").permitAll() // Tout le monde peut accéder à la page de login
+		               .anyRequest().authenticated() // Les utilisateurs doivent être authentifiés pour accéder à toutes les autres pages
+		               .and()
+		               .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		   }
+		   
+		   @Override
+		   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		       auth.inMemoryAuthentication()
+		               .withUser("admin")
+		               .password("{noop}password") // Le mot de passe est "password"
+		               .roles("ADMIN");
+		   }
+		}
+
+
 ## Mise en place de l'environnement de test Eclipse
 
 Pour installer JUnit sur Eclipse, vous pouvez suivre les étapes suivantes:
@@ -330,7 +403,7 @@ Ajoutez la dépendance Mockito à votre fichier pom.xml. Si vous utilisez Gradle
 		   <scope>test</scope>
 		</dependency>
 
-## Tester une entité modèle  Spring Boot
+## Tester une entité modèle Spring Boot
 
 Pour tester une classe modèle Java Spring Boot, vous pouvez utiliser l'un des frameworks de test disponibles pour Spring Boot, tels que JUnit ou Mockito. Voici un exemple de test unitaire qui teste une classe modèle simple :
 

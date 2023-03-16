@@ -4,7 +4,7 @@ Bonnes pratiques Spring Boot de A à Z
 
 # Sommaire
 ## Démarrage
-- [Bien démarrer un projet Spring boot](#bien-démarrer-un-projet-spring-boot)
+- [Bien démarrer un projet Spring Boot](#bien-démarrer-un-projet-spring-boot)
 - [Créer son premier projet Spring Boot](#créer-son-premier-projet-spring-boot)
 - [Importer un projet Spring Boot sur Eclipse](#importer-un-projet-spring-boot-sur-eclipse)
 - [Configurer Eclipse pour Maven et Spring Boot](#configurer-eclipse-pour-maven-et-spring-boot)
@@ -23,6 +23,7 @@ Bonnes pratiques Spring Boot de A à Z
 - [Tester une interface "Repository" Spring Boot](#tester-une-interface-repository-spring-boot)
 - [Tester un service Spring Boot](#tester-un-service-spring-boot)
 - [Tester un controller Spring Boot](#tester-un-controller-spring-boot)
+- [Tester son authentification Spring Boot](#tester-son-authentification-spring-boot)
 ## Documentation
 - [Mise en place du Swagger de l'API Spring Boot](#mise-en-place-du-swagger-de-lapi-spring-boot)
 - [Bien commenter son code](#bien-commenter-son-code)
@@ -321,7 +322,6 @@ Ces méthodes appellent les méthodes correspondantes du service d'utilisateur p
 		</dependency>
 
 2.  Dans votre classe User pensez à ajouter les champs nécessaires pour stocker les informations d'identification, telles que l'adresse e-mail et le mot de passe.
-
 3. Créez un contrôleur pour gérer les demandes d'authentification et de création de jetons. Dans ce contrôleur, créez une méthode pour générer un jeton JWT en utilisant la bibliothèque jjwt.
 
 	    @RestController
@@ -350,7 +350,6 @@ Ces méthodes appellent les méthodes correspondantes du service d'utilisateur p
 		       SpringApplication.run(MyApp.class, args);
 		   }
 		}
-		
 5.  Créez une classe de configuration de sécurité qui définit les règles d'accès aux points de terminaison de l'API. Dans cette classe, créez une méthode pour authentifier les utilisateurs en utilisant le jeton JWT.
 
 	    @Configuration
@@ -556,6 +555,86 @@ Voici un exemple de test de la classe UserController en utilisant JUnit et Mocki
 	}
 
 Dans cet exemple, nous avons utilisé Mockito pour simuler le comportement de la couche de service et nous avons utilisé MockMvc pour tester l'API REST. Nous avons créé un utilisateur simulé et avons simulé l'appel à la méthode `getUserById` du service en utilisant `Mockito.when`. Ensuite, nous avons appelé l'API REST en utilisant MockMvc et avons vérifié si la réponse contient les bonnes informations d'utilisateur en utilisant `andExpect`. Enfin, nous avons vérifié que la méthode `getUserById` du service a été appelée une fois en utilisant `Mockito.verify`.
+
+## Tester son authentification Spring Boot
+
+1.  Créez une classe de test et ajoutez les annotations nécessaires :
+
+	    @RunWith(SpringRunner.class)
+		@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+		@AutoConfigureMockMvc
+		public class AuthControllerTest {
+		   
+		   @Autowired
+		   private MockMvc mockMvc;
+		   
+		   //...
+		}
+
+
+2. Créez une méthode pour tester l'authentification avec des informations d'identification valides :
+
+	    @Test
+		public void testLoginWithValidCredentials() throws Exception {
+		   User user = new User();
+		   user.setEmail("john@example.com");
+		   user.setPassword("password");
+		   
+		   mockMvc.perform(post("/login")
+		           .contentType(MediaType.APPLICATION_JSON)
+		           .content(new ObjectMapper().writeValueAsString(user)))
+		           .andExpect(status().isOk())
+		           .andExpect(jsonPath("$").isString());
+		}
+3.  Créez une méthode pour tester l'authentification avec des informations d'identification invalides :
+
+	    @Test
+		public void testLoginWithInvalidCredentials() throws Exception {
+		   User user = new User();
+		   user.setEmail("john@example.com");
+		   user.setPassword("wrong_password");
+		   
+		   mockMvc.perform(post("/login")
+		           .contentType(MediaType.APPLICATION_JSON)
+		           .content(new ObjectMapper().writeValueAsString(user)))
+		           .andExpect(status().isUnauthorized());
+		}
+4.  Ajoutez une méthode pour tester l'accès à un point de terminaison sécurisé avec un jeton JWT valide :
+
+	    @Test
+		public void testAccessSecureEndpointWithValidToken() throws Exception {
+		   User user = new User();
+		   user.setEmail("john@example.com");
+		   user.setPassword("password");
+		   
+		   MvcResult result = mockMvc.perform(post("/login")
+		           .contentType(MediaType.APPLICATION_JSON)
+		           .content(new ObjectMapper().writeValueAsString(user)))
+		           .andReturn();
+		   
+		   String token = result.getResponse().getContentAsString();
+		   
+		   mockMvc.perform(get("/secure")
+		           .header("Authorization", "Bearer " + token))
+		           .andExpect(status().isOk());
+		}
+5.  Ajoutez une méthode pour tester l'accès à un point de terminaison sécurisé sans jeton JWT :
+
+	    @Test
+		public void testAccessSecureEndpointWithoutToken() throws Exception {
+		   mockMvc.perform(get("/secure"))
+		           .andExpect(status().isUnauthorized());
+		}
+6.  Ajoutez une méthode pour tester l'accès à un point de terminaison sécurisé avec un jeton JWT invalide :
+
+	    @Test
+		public void testAccessSecureEndpointWithInvalidToken() throws Exception {
+		   mockMvc.perform(get("/secure")
+		           .header("Authorization", "Bearer invalid_token"))
+		           .andExpect(status().isUnauthorized());
+		}
+
+Ces tests permettent de vérifier que le système d'authentification avec JWT fonctionne correctement en vérifiant la validité des informations d'identification et la protection des points de terminaison sécurisés.
 
 ## Mise en place du Swagger de l'API Spring Boot
 
